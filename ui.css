@@ -1,0 +1,46 @@
+/* The document itself is darkened by page-hook.js on the canvas. This file
+   only darkens the surrounding DOM UI (toolbar, rulers, sidebars, menus,
+   dialogs). It is keyed off the attribute page-hook.js sets, so it does
+   nothing while the extension is off. */
+
+html[data-tdd-active="1"] {
+  color-scheme: dark;
+  --tdd-surround: #141414;
+}
+html[data-tdd-active="1"][data-tdd-theme="black"] {
+  --tdd-surround: #1b1b1b;
+}
+html[data-tdd-active="1"][data-tdd-theme="dim"] {
+  --tdd-surround: #1d1d1f;
+}
+
+/* Grey area around the pages. */
+html[data-tdd-active="1"] body,
+html[data-tdd-active="1"] #docs-editor,
+html[data-tdd-active="1"] .kix-appview-editor {
+  background-color: var(--tdd-surround) !important;
+}
+
+/* DOM UI: invert lightness but keep hues. Everything that is a direct child
+   of <body> other than the editor (toolbar, menus, dialogs, bubbles, side
+   panels) plus the UI pieces that live inside the editor. */
+html[data-tdd-active="1"] body > :not(#docs-editor-container):not(script):not(style),
+html[data-tdd-active="1"] .docs-ruler,
+html[data-tdd-active="1"] .left-sidebar-container,
+html[data-tdd-active="1"] .kix-documentmetrics-widget,
+html[data-tdd-active="1"] .docos-anchoreddocoview,
+html[data-tdd-active="1"] .docos-streampane-container {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Put real pictures back inside those inverted areas (avatars, previews,
+   thumbnails, drawing editor canvases). */
+html[data-tdd-active="1"] body > :not(#docs-editor-container) img,
+html[data-tdd-active="1"] body > :not(#docs-editor-container) video,
+html[data-tdd-active="1"] body > :not(#docs-editor-container) canvas,
+html[data-tdd-active="1"] body > :not(#docs-editor-container) iframe,
+html[data-tdd-active="1"] .left-sidebar-container img,
+html[data-tdd-active="1"] .docos-anchoreddocoview img,
+html[data-tdd-active="1"] .docos-streampane-container img {
+  filter: invert(1) hue-rotate(180deg);
+}

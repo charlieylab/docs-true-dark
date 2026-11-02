@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Docs True Dark",
+  "version": "0.1.0",
+  "description": "Google Docs 深色模式：重新上色文字與背景，圖片保持原始像素、完全不變色。",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Docs True Dark",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/document/*"],
+      "js": ["page-hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://docs.google.com/document/*"],
+      "js": ["content.js"],
+      "css": ["ui.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
