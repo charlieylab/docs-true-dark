@@ -48,3 +48,49 @@ chrome.storage.onChanged.addListener((changes, area) => {
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (current.mode === "auto") reloadWhenVisible();
 });
+
+// ---- text caret --------------------------------------------------------
+// The caret is a DOM element whose colour Docs sets inline (and resets every
+// time it moves), in whatever format it likes. Rather than match that string
+// in CSS, look at the colour it actually renders with and lighten it when it
+// is a near-black grey. Collaborators' carets are saturated colours, so
+// they are left alone.
+const CARET_COLOR = "#f1f3f4";
+
+function isDark(rgb) {
+  const m = rgb.match(/[\d.]+/g);
+  if (!m || (m[3] !== undefined && +m[3] === 0)) return false;
+  const [r, g, b] = m.map(Number);
+  const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+  return chroma < 40 && 0.2126 * r + 0.7152 * g + 0.0722 * b < 110;
+}
+
+function fixCaret(el) {
+  if (document.documentElement.dataset.tddActive !== "1") return;
+  const cs = getComputedStyle(el);
+  if (parseFloat(cs.borderLeftWidth) > 0 && isDark(cs.borderLeftColor)) {
+    el.style.setProperty("border-color", CARET_COLOR, "important");
+  }
+  if (isDark(cs.backgroundColor)) {
+    el.style.setProperty("background-color", CARET_COLOR, "important");
+  }
+}
+
+new MutationObserver((mutations) => {
+  for (const mu of mutations) {
+    if (mu.type === "attributes") {
+      if (mu.target.classList?.contains("kix-cursor-caret")) fixCaret(mu.target);
+      continue;
+    }
+    for (const n of mu.addedNodes) {
+      if (n.nodeType !== 1) continue;
+      if (n.classList.contains("kix-cursor-caret")) fixCaret(n);
+      n.querySelectorAll?.(".kix-cursor-caret").forEach(fixCaret);
+    }
+  }
+}).observe(document.documentElement, {
+  subtree: true,
+  childList: true,
+  attributes: true,
+  attributeFilter: ["style", "class"],
+});
