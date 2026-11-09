@@ -21,6 +21,13 @@ html[data-tdd-active="1"] .kix-appview-editor {
   background-color: var(--tdd-surround) !important;
 }
 
+/* Your own text caret is a DOM element Docs paints black, which vanishes on
+   the dark page. Collaborators' carets use their own colours, so only the
+   black one is recoloured. */
+html[data-tdd-active="1"] .kix-cursor-caret[style*="border-color: rgb(0, 0, 0)"] {
+  border-color: #f1f3f4 !important;
+}
+
 /* DOM UI: invert lightness but keep hues. Everything that is a direct child
    of <body> other than the editor (toolbar, menus, dialogs, bubbles, side
    panels) plus the UI pieces that live inside the editor. */
