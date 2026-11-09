@@ -2,35 +2,64 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <style>
-    :root { color-scheme: light dark; }
-    body {
-      margin: 0; padding: 14px 16px; width: 220px;
-      font: 13px/1.4 system-ui, "Microsoft JhengHei", sans-serif;
-      background: #1f1f1f; color: #e3e3e3;
-    }
-    h1 { font-size: 14px; margin: 0 0 12px; }
-    fieldset { border: 0; padding: 0; margin: 0 0 12px; }
-    legend { color: #9aa0a6; font-size: 12px; margin-bottom: 4px; }
-    label { display: block; padding: 3px 0; cursor: pointer; }
-    p { color: #9aa0a6; font-size: 11px; margin: 0; }
-  </style>
+  <link rel="stylesheet" href="popup.css">
 </head>
-<body>
-  <h1>Docs True Dark</h1>
-  <fieldset>
-    <legend>深色模式</legend>
-    <label><input type="radio" name="mode" value="on"> 開啟</label>
-    <label><input type="radio" name="mode" value="off"> 關閉</label>
-    <label><input type="radio" name="mode" value="auto"> 跟隨系統</label>
-  </fieldset>
-  <fieldset>
-    <legend>主題</legend>
-    <label><input type="radio" name="theme" value="dark"> 深灰</label>
-    <label><input type="radio" name="theme" value="black"> 純黑（OLED）</label>
-    <label><input type="radio" name="theme" value="dim"> 柔和</label>
-  </fieldset>
-  <p>切換後已開啟的文件會自動重新整理。</p>
+<body class="is-dark">
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <!-- "Gooey" filter: blurs the blobs together, then sharpens the alpha
+         edge again so overlapping circles melt into one liquid shape. -->
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+    </filter>
+  </svg>
+
+  <header>
+    <img src="icons/icon48.png" alt="" width="28" height="28">
+    <div>
+      <h1>Docs True Dark</h1>
+      <p class="status" id="status">深色模式已開啟</p>
+    </div>
+  </header>
+
+  <button class="switch" id="switch" role="switch" aria-checked="true" aria-label="深色模式">
+    <span class="sky sky-day">
+      <span class="cloud c1"></span>
+      <span class="cloud c2"></span>
+    </span>
+    <span class="sky sky-night">
+      <span class="star s1"></span><span class="star s2"></span><span class="star s3"></span>
+      <span class="star s4"></span><span class="star s5"></span>
+    </span>
+    <span class="goo">
+      <span class="blob b3"></span>
+      <span class="blob b2"></span>
+      <span class="blob b1"></span>
+    </span>
+    <span class="face">
+      <span class="crater k1"></span>
+      <span class="crater k2"></span>
+      <span class="crater k3"></span>
+    </span>
+  </button>
+
+  <label class="row">
+    <span>跟隨系統深淺色</span>
+    <input type="checkbox" id="auto" class="mini">
+  </label>
+
+  <section class="themes" id="themes">
+    <h2>主題</h2>
+    <div class="swatches">
+      <button class="swatch" data-theme="dark"><span style="--c:#1e1e1e"></span>深灰</button>
+      <button class="swatch" data-theme="black"><span style="--c:#000"></span>純黑</button>
+      <button class="swatch" data-theme="dim"><span style="--c:#2f3136"></span>柔和</button>
+    </div>
+  </section>
+
+  <footer>切換後，已開啟的文件會自動重新整理</footer>
   <script src="popup.js"></script>
 </body>
 </html>
