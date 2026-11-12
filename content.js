@@ -94,3 +94,27 @@ new MutationObserver((mutations) => {
   attributes: true,
   attributeFilter: ["style", "class"],
 });
+
+// ---- image saver bridge ------------------------------------------------
+// image-saver.js (MAIN world) has no chrome.* APIs, so
+// it posts fetch requests here and we relay them to the service worker.
+window.addEventListener("message", (e) => {
+  if (e.source !== window || e.data?.__dis !== "fetch") return;
+  const { id, url } = e.data;
+  const answer = (payload) => window.postMessage({ __dis: "fetch-result", id, ...payload }, "*");
+  try {
+    chrome.runtime.sendMessage({ type: "dis-fetch", url }, (res) => {
+      if (chrome.runtime.lastError || !res?.ok) {
+        answer({ ok: false, error: chrome.runtime.lastError?.message || res?.error });
+        return;
+      }
+      const bin = atob(res.data);
+      const buf = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+      answer({ ok: true, type: res.type, buffer: buf.buffer });
+    });
+  } catch (err) {
+    // Extension was reloaded while this tab stayed open.
+    answer({ ok: false, error: String(err) });
+  }
+});

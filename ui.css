@@ -16,6 +16,7 @@ html[data-tdd-active="1"][data-tdd-theme="dim"] {
 
 /* Grey area around the pages. */
 html[data-tdd-active="1"] body,
+html[data-tdd-active="1"] #docs-editor-container,
 html[data-tdd-active="1"] #docs-editor,
 html[data-tdd-active="1"] .kix-appview-editor {
   background-color: var(--tdd-surround) !important;
@@ -40,12 +41,32 @@ html[data-tdd-active="1"] .docos-streampane-container {
   filter: invert(1) hue-rotate(180deg);
 }
 
+/* The layer that dims the page behind a dialog is translucent black; the
+   invert above would turn it into a white haze. Start it white instead so
+   it ends up dark. */
+html[data-tdd-active="1"] [class*="dialog__scrim"] {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Dialogs such as Share are embedded pages (iframes). They were inverted
+   twice when nested inside an already inverted element, which left them
+   white. Every frame is now darkened exactly once, whether it sits directly
+   under <body> or deeper, and is declared light so the browser keeps its
+   transparent backdrop. frame.js restores pictures and the dimming layer
+   inside the frames it can reach. */
+html[data-tdd-active="1"] iframe {
+  color-scheme: light;
+}
+html[data-tdd-active="1"] #docs-editor-container iframe {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 /* Put real pictures back inside those inverted areas (avatars, previews,
-   thumbnails, drawing editor canvases). */
+   thumbnails, drawing editor canvases). Iframes are not listed: they
+   must stay darkened. */
 html[data-tdd-active="1"] body > :not(#docs-editor-container) img,
 html[data-tdd-active="1"] body > :not(#docs-editor-container) video,
 html[data-tdd-active="1"] body > :not(#docs-editor-container) canvas,
-html[data-tdd-active="1"] body > :not(#docs-editor-container) iframe,
 html[data-tdd-active="1"] .left-sidebar-container img,
 html[data-tdd-active="1"] .docos-anchoreddocoview img,
 html[data-tdd-active="1"] .docos-streampane-container img {
